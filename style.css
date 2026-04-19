@@ -75,6 +75,17 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 3px rgba(124, 220, 140, 0.15);
 }
 
+/* Correção das opções do dropdown (o navegador usa cores do sistema por padrão) */
+select option {
+  background: #1a2e22;
+  color: #e8f5ee;
+  padding: 8px;
+}
+.dm-wrap.light select option {
+  background: #ffffff;
+  color: #1a2e22;
+}
+
 button {
   background: var(--dm-card);
   border: 0.5px solid var(--dm-border-strong);

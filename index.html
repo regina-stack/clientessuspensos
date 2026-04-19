@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital+ Contabilidade · Painel de Bloqueios</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='38' y='10' width='24' height='22' rx='3' fill='%234BC67A'/%3E%3Crect x='10' y='38' width='22' height='24' rx='3' fill='%234BC67A'/%3E%3Crect x='68' y='38' width='22' height='24' rx='3' fill='%234BC67A'/%3E%3Crect x='38' y='68' width='24' height='22' rx='3' fill='%234BC67A'/%3E%3Crect x='38' y='38' width='24' height='24' rx='3' fill='%237CDC8C'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="dm-wrap dark" id="dm-root">
+
+    <!-- CABEÇALHO -->
+    <div class="dm-header">
+      <div class="dm-brand">
+        <svg width="56" height="56" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="dmG" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#4FD1A1"/><stop offset="50%" stop-color="#7CDC8C"/><stop offset="100%" stop-color="#A8E87A"/>
+            </linearGradient>
+            <linearGradient id="dmGD" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#2A8B6E"/><stop offset="100%" stop-color="#3FA878"/>
+            </linearGradient>
+          </defs>
+          <g stroke="url(#dmG)" stroke-width="3" fill="url(#dmGD)">
+            <rect x="38" y="10" width="24" height="22" rx="3"/>
+            <rect x="10" y="38" width="22" height="24" rx="3"/>
+            <rect x="68" y="38" width="22" height="24" rx="3"/>
+            <rect x="38" y="68" width="24" height="22" rx="3"/>
+            <rect x="38" y="38" width="24" height="24" rx="3" fill="url(#dmG)" opacity="0.6"/>
+          </g>
+        </svg>
+        <div>
+          <div class="brand-name"><span class="brand-grad">DIGITAL+</span></div>
+          <div class="brand-sub">CONTABILIDADE</div>
+        </div>
+      </div>
+      <div class="dm-auth" id="auth-buttons">
+        <button class="icon-btn" onclick="toggleTheme()" title="Alternar tema">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <button onclick="openLoginModal()">Entrar</button>
+      </div>
+    </div>
+
+    <!-- TÍTULO + BOTÕES -->
+    <div class="dm-titlebar">
+      <div>
+        <h1>Painel de bloqueio de serviços</h1>
+        <p class="muted" id="user-info">Acesso público — visualização</p>
+      </div>
+      <div class="btn-group">
+        <button onclick="window.print()" title="Imprimir ou gerar PDF">
+          <span class="btn-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Imprimir
+          </span>
+        </button>
+        <button onclick="exportExcel()" title="Exportar para Excel">
+          <span class="btn-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar Excel
+          </span>
+        </button>
+        <button onclick="openImportModal()" id="btn-import" style="display:none;">
+          <span class="btn-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Importar
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- MÉTRICAS -->
+    <div class="metrics-grid">
+      <div class="metric"><p class="muted">Clientes</p><p class="metric-value" id="metric-total">0</p></div>
+      <div class="metric"><p class="muted">Bloqueados</p><p class="metric-value" style="color:#d34745;" id="metric-bloqueados">0</p></div>
+      <div class="metric"><p class="muted">Ativos</p><p class="metric-value" style="color:#2d8a52;" id="metric-desbloqueados">0</p></div>
+      <div class="metric"><p class="muted">Total bloqueios</p><p class="metric-value" id="metric-eventos">0</p></div>
+      <div class="metric metric-critico"><p class="muted">Críticos (+60d)</p><p class="metric-value" style="color:#d34745;" id="metric-criticos">0</p></div>
+    </div>
+
+    <!-- GRÁFICO -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <h3>Bloqueios por mês</h3>
+          <p class="muted chart-sub">Últimos 12 meses</p>
+        </div>
+        <div class="chart-legend">
+          <span><span class="legend-dot" style="background:#d34745;"></span>Bloqueios</span>
+          <span><span class="legend-dot" style="background:#4BC67A;"></span>Desbloqueios</span>
+        </div>
+      </div>
+      <div id="chart-area"></div>
+    </div>
+
+    <!-- TOP INADIMPLENTES -->
+    <div class="chart-card" id="top-card" style="display:none;">
+      <h3>Top inadimplentes recorrentes</h3>
+      <p class="muted chart-sub">Clientes com mais bloqueios registrados</p>
+      <div id="top-list"></div>
+    </div>
+
+    <!-- ABAS -->
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-atual" onclick="switchTab('atual')">Situação atual</button>
+      <button class="tab-btn" id="tab-historico" onclick="switchTab('historico')">Histórico completo</button>
+      <button class="tab-btn" id="tab-log" onclick="switchTab('log')" style="display:none;">Log de auditoria</button>
+      <button class="tab-btn" id="tab-usuarios" onclick="switchTab('usuarios')" style="display:none;">Usuários</button>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="filter-row" id="filter-row">
+      <input type="text" id="filter-input" placeholder="Buscar por nome ou CNPJ..." oninput="render()" style="flex:1;min-width:180px;">
+      <select id="filter-status" onchange="render()" style="min-width:140px;">
+        <option value="todos">Todos os status</option>
+        <option value="bloqueado">Bloqueados</option>
+        <option value="desbloqueado">Desbloqueados</option>
+        <option value="critico">Críticos (+60d)</option>
+      </select>
+      <input type="date" id="filter-de" onchange="render()" title="Data inicial">
+      <input type="date" id="filter-ate" onchange="render()" title="Data final">
+      <button class="icon-btn" onclick="clearFilters()" title="Limpar filtros">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <button id="btn-novo-cliente" class="primary" onclick="openClientModal()" style="display:none;">+ Novo cliente</button>
+    </div>
+
+    <!-- TABELA ATUAL -->
+    <div id="view-atual" class="card-surface">
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr>
+            <th class="sortable" onclick="sortBy('nome')">Cliente <span id="sort-nome"></span></th>
+            <th>CNPJ</th>
+            <th>Status</th>
+            <th class="sortable" onclick="sortBy('dias')">Tempo bloqueado <span id="sort-dias"></span></th>
+            <th class="sortable" onclick="sortBy('total')" style="text-align:center;">Bloqueios <span id="sort-total"></span></th>
+            <th class="sortable" onclick="sortBy('ultimo')">Último bloqueio <span id="sort-ultimo"></span></th>
+            <th style="text-align:right;" id="th-acoes-atual"></th>
+          </tr></thead>
+          <tbody id="atual-tbody"></tbody>
+        </table>
+      </div>
+      <div id="atual-empty" class="empty-state muted" style="display:none;"></div>
+    </div>
+
+    <!-- TABELA HISTÓRICO -->
+    <div id="view-historico" class="card-surface" style="display:none;">
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr>
+            <th>Cliente</th><th>CNPJ</th><th>Bloqueio</th><th>Desbloqueio</th>
+            <th>Duração</th><th>Situação</th><th>Observação</th>
+          </tr></thead>
+          <tbody id="hist-tbody"></tbody>
+        </table>
+      </div>
+      <div id="hist-empty" class="empty-state muted" style="display:none;"></div>
+    </div>
+
+    <!-- LOG -->
+    <div id="view-log" style="display:none;">
+      <div id="log-list"></div>
+      <div id="log-empty" class="empty-state muted" style="display:none;">Nenhuma ação registrada ainda.</div>
+    </div>
+
+    <!-- USUÁRIOS (só admin) -->
+    <div id="view-usuarios" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:8px;">
+        <div>
+          <h3 style="margin:0;">Funcionários cadastrados</h3>
+          <p class="muted" style="font-size:12px;margin-top:4px;">Apenas administradores podem criar e gerenciar contas</p>
+        </div>
+        <button class="primary" onclick="openCreateUserModal()">+ Novo usuário</button>
+      </div>
+      <div class="card-surface">
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr>
+              <th>Nome</th><th>E-mail</th><th>Tipo</th><th>Cadastrado em</th>
+              <th style="text-align:right;">Ações</th>
+            </tr></thead>
+            <tbody id="users-tbody"></tbody>
+          </table>
+        </div>
+        <div id="users-empty" class="empty-state muted" style="display:none;">Nenhum usuário cadastrado.</div>
+      </div>
+    </div>
+
+    <div class="dm-footer muted">
+      DIGITAL+ CONTABILIDADE · PAINEL INTERNO · <span id="footer-date"></span>
+    </div>
+
+    <!-- MODAIS -->
+    <div id="login-modal" class="modal-bg">
+      <div class="modal-card">
+        <h2 id="login-title">Acesso de funcionário</h2>
+        <p class="muted modal-sub" id="login-subtitle">Entre com suas credenciais</p>
+        <div id="login-form">
+          <label><span class="muted">E-mail</span><input type="email" id="login-email"></label>
+          <label><span class="muted">Senha</span><input type="password" id="login-senha"></label>
+          <div id="login-error" class="error-box" style="display:none;"></div>
+          <div class="modal-actions">
+            <button class="primary" onclick="doLogin()" style="flex:1;">Entrar</button>
+            <button onclick="closeLoginModal()">Cancelar</button>
+          </div>
+          <div class="modal-links" id="login-links">
+            <a href="#" onclick="event.preventDefault();showRecoverForm();">Esqueci minha senha</a>
+            <a href="#" id="link-criar-conta" onclick="event.preventDefault();showRegisterForm();" style="display:none;">Criar conta</a>
+          </div>
+        </div>
+        <div id="register-form" style="display:none;">
+          <div id="first-user-hint" class="info-box" style="display:none;">🔐 Este será o <b>primeiro cadastro do sistema</b>. Você será o administrador e poderá criar as contas dos demais funcionários pela aba "Usuários".</div>
+          <label><span class="muted">Nome completo</span><input type="text" id="reg-nome"></label>
+          <label><span class="muted">E-mail</span><input type="email" id="reg-email"></label>
+          <label><span class="muted">Senha (mín. 6 caracteres)</span><input type="password" id="reg-senha"></label>
+          <label><span class="muted">Pergunta de segurança</span><input type="text" id="reg-pergunta" placeholder="Ex: Nome do meu primeiro pet"></label>
+          <label><span class="muted">Resposta</span><input type="text" id="reg-resposta"></label>
+          <div id="reg-error" class="error-box" style="display:none;"></div>
+          <div class="modal-actions">
+            <button class="primary" onclick="doRegister()" style="flex:1;">Cadastrar</button>
+            <button onclick="showLoginForm()">Voltar</button>
+          </div>
+        </div>
+        <div id="recover-form" style="display:none;">
+          <label><span class="muted">E-mail cadastrado</span><input type="email" id="rec-email" oninput="loadQuestion()"></label>
+          <div id="rec-question-box" style="display:none;">
+            <div class="info-box" id="rec-question"></div>
+            <label><span class="muted">Resposta</span><input type="text" id="rec-resposta"></label>
+            <label><span class="muted">Nova senha</span><input type="password" id="rec-nova-senha"></label>
+          </div>
+          <div id="rec-error" class="error-box" style="display:none;"></div>
+          <div class="modal-actions">
+            <button class="primary" onclick="doRecover()" style="flex:1;">Redefinir senha</button>
+            <button onclick="showLoginForm()">Voltar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="client-modal" class="modal-bg">
+      <div class="modal-card">
+        <h2 id="client-modal-title">Novo cliente</h2>
+        <p class="muted modal-sub">Cadastro do cliente</p>
+        <label><span class="muted">Nome do cliente</span><input type="text" id="cli-nome"></label>
+        <label><span class="muted">CNPJ</span><input type="text" id="cli-cnpj" placeholder="00.000.000/0000-00" maxlength="18" oninput="formatCNPJ(this)"></label>
+        <div id="cli-error" class="error-box" style="display:none;"></div>
+        <div class="modal-actions">
+          <button class="primary" onclick="saveClient()" style="flex:1;">Salvar</button>
+          <button onclick="closeClientModal()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="detail-modal" class="modal-bg">
+      <div class="modal-card" style="max-width:580px;">
+        <div class="detail-header">
+          <div>
+            <h2 id="detail-nome">—</h2>
+            <p class="muted" id="detail-cnpj">—</p>
+          </div>
+          <button onclick="closeDetailModal()" class="mini-btn">Fechar</button>
+        </div>
+        <div id="detail-status-area"></div>
+        <div class="detail-hist-header">
+          <h3 class="muted">Histórico de bloqueios</h3>
+          <input type="text" id="detail-filter" placeholder="Filtrar por ano..." oninput="filterDetailHistory()">
+        </div>
+        <div id="detail-historico"></div>
+        <div id="detail-actions" style="display:none;">
+          <div class="modal-actions">
+            <button id="btn-novo-bloqueio" class="primary" onclick="openBloqueioModal()">Novo bloqueio</button>
+            <button onclick="openClientModal(currentDetailId)">Editar cadastro</button>
+            <button id="btn-excluir-cliente" onclick="openDeleteConfirm()" style="color:#d34745;display:none;">Excluir cliente</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="bloqueio-modal" class="modal-bg">
+      <div class="modal-card">
+        <h2 id="bloqueio-modal-title">Novo bloqueio</h2>
+        <p class="muted modal-sub" id="bloqueio-modal-cliente">—</p>
+        <label><span class="muted">Data de bloqueio</span><input type="date" id="blq-bloqueio"></label>
+        <label><span class="muted">Data de desbloqueio (opcional)</span><input type="date" id="blq-desbloqueio"></label>
+        <label><span class="muted">Observação</span><textarea id="blq-obs" placeholder="Motivo do bloqueio, valor em aberto, tratativas..."></textarea></label>
+        <div id="blq-error" class="error-box" style="display:none;"></div>
+        <div class="modal-actions">
+          <button class="primary" onclick="saveBloqueio()" style="flex:1;">Salvar</button>
+          <button onclick="closeBloqueioModal()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="delete-modal" class="modal-bg">
+      <div class="modal-card">
+        <h2 style="color:#d34745;">Confirmar exclusão</h2>
+        <p class="muted modal-sub">Esta ação é irreversível. Todo o histórico de bloqueios será apagado.</p>
+        <p>Para confirmar, digite o nome do cliente:</p>
+        <p class="delete-target-name" id="delete-target-name">—</p>
+        <input type="text" id="delete-confirm-input" placeholder="Digite o nome exato">
+        <div id="delete-error" class="error-box" style="display:none;"></div>
+        <div class="modal-actions">
+          <button onclick="confirmDelete()" class="btn-danger" style="flex:1;">Excluir definitivamente</button>
+          <button onclick="closeDeleteConfirm()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="import-modal" class="modal-bg">
+      <div class="modal-card">
+        <h2>Importar clientes</h2>
+        <p class="muted modal-sub">Arquivo Excel (.xlsx) com colunas <b>Nome</b> e <b>CNPJ</b>.</p>
+        <input type="file" id="import-file" accept=".xlsx,.xls">
+        <div id="import-preview" class="import-preview" style="display:none;"></div>
+        <div id="import-error" class="error-box" style="display:none;"></div>
+        <div class="modal-actions">
+          <button class="primary" onclick="doImport()" id="btn-do-import" disabled style="flex:1;">Importar</button>
+          <button onclick="closeImportModal()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="create-user-modal" class="modal-bg">
+      <div class="modal-card">
+        <h2 id="create-user-title">Novo usuário</h2>
+        <p class="muted modal-sub">Apenas administradores podem criar contas</p>
+        <label><span class="muted">Nome completo</span><input type="text" id="cu-nome"></label>
+        <label><span class="muted">E-mail</span><input type="email" id="cu-email"></label>
+        <label><span class="muted">Senha inicial (mín. 6 caracteres)</span><input type="text" id="cu-senha" placeholder="Informe ao usuário depois de criar"></label>
+        <label><span class="muted">Pergunta de segurança</span><input type="text" id="cu-pergunta" placeholder="Ex: Nome do meu primeiro pet"></label>
+        <label><span class="muted">Resposta</span><input type="text" id="cu-resposta"></label>
+        <label><span class="muted">Tipo de acesso</span>
+          <select id="cu-role">
+            <option value="funcionario">Funcionário (cadastra e edita)</option>
+            <option value="admin">Administrador (acesso total)</option>
+          </select>
+        </label>
+        <div class="info-box" style="font-size:12px;">
+          Após criar, avise o usuário da <b>senha inicial</b> e da <b>pergunta/resposta de segurança</b>. Ele poderá alterar depois usando "Esqueci minha senha".
+        </div>
+        <div id="cu-error" class="error-box" style="display:none;"></div>
+        <div class="modal-actions">
+          <button class="primary" onclick="createUser()" style="flex:1;">Criar usuário</button>
+          <button onclick="closeCreateUserModal()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="reset-user-modal" class="modal-bg">
+      <div class="modal-card">
+        <h2>Resetar senha do usuário</h2>
+        <p class="muted modal-sub" id="ru-target">—</p>
+        <label><span class="muted">Nova senha (mín. 6 caracteres)</span><input type="text" id="ru-senha" placeholder="Informe ao usuário depois"></label>
+        <div class="info-box" style="font-size:12px;">
+          Após salvar, avise o usuário da nova senha. Ele poderá entrar imediatamente com ela.
+        </div>
+        <div id="ru-error" class="error-box" style="display:none;"></div>
+        <div class="modal-actions">
+          <button class="primary" onclick="resetUserPassword()" style="flex:1;">Resetar senha</button>
+          <button onclick="closeResetUserModal()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="loading-overlay" class="loading-overlay" style="display:none;">
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <!-- BIBLIOTECAS EXTERNAS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <!-- CONFIG + APP -->
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

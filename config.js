@@ -7,10 +7,10 @@
 
 const SUPABASE_CONFIG = {
   // Cole aqui a URL do seu projeto (ex: https://xxxxx.supabase.co)
-  url: 'COLE_AQUI_A_URL_DO_SUPABASE',
+  url: 'https://kzecnmbywkckjthnbwgm.supabase.co',
 
   // Cole aqui a chave "anon public" (a chave longa)
-  anonKey: 'COLE_AQUI_A_CHAVE_ANON_PUBLIC'
+  anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt6ZWNubWJ5d2tja2p0aG5id2dtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MjM5ODEsImV4cCI6MjA5MjE5OTk4MX0.uHdxmLwzHum2bS5o8tcc3rhSLNf995zxcB6Dnw-Mus0'
 };
 
 // Não precisa mexer em mais nada abaixo desta linha ↓
